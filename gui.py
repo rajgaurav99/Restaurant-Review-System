@@ -138,9 +138,10 @@ insufficient_data_to_classify=[]
 
 
 
-from tkinter import *
+
+from tkinter import Button, PhotoImage, Entry, Label, E, W, N, Toplevel, Canvas, Tk, NORMAL, END, messagebox, INSERT, DISABLED, IntVar, Radiobutton, Text
 from tkinter import ttk
-from PIL import ImageTk, Image
+
 root = Tk()
 root.title("Home Page")
 root.geometry("310x389")
@@ -152,31 +153,41 @@ background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 def rest_review():
     def main_action():
+        flag=True
         res_id=ip.get().lower()
         if(param.get()==1):
-            name=rest_id_dict[res_id]
+            if(res_id not in rest_id_dict.keys()):
+                flag=False
+            else:
+                name=rest_id_dict[res_id]
         else:
-            name=res_id
-        label6.config(state=NORMAL)
-        label7.config(state=NORMAL)
-        label8.config(state=NORMAL)
-        label6.delete('1.0', END)
-        label7.delete('1.0', END)
-        label8.delete('1.0', END)
-        positive_reviews, negative_reviews, insufficient_data_to_classify,indexWiseScore = classifyReviewsOf(rest_index_dict[name])
-        positive=len(positive_reviews)
-        negative=len(negative_reviews)
-        neutral=len(insufficient_data_to_classify)
-        total=positive+negative+neutral
-        positive_percentage=(positive*100)//total
-        negative_percentage=(negative*100)//total
-        neutral_percentage=(neutral*100)//total
-        label6.insert(INSERT,str(positive_percentage)+"%")
-        label7.insert(INSERT,str(neutral_percentage)+"%")
-        label8.insert(INSERT,str(negative_percentage)+"%")
-        label6.config(state=DISABLED)
-        label7.config(state=DISABLED)
-        label8.config(state=DISABLED)
+            if(res_id not in rest_id_dict.values()):
+                flag=False
+            else:
+                name=res_id
+        if(flag):
+            label6.config(state=NORMAL)
+            label7.config(state=NORMAL)
+            label8.config(state=NORMAL)
+            label6.delete('1.0', END)
+            label7.delete('1.0', END)
+            label8.delete('1.0', END)
+            positive_reviews, negative_reviews, insufficient_data_to_classify,indexWiseScore = classifyReviewsOf(rest_index_dict[name])
+            positive=len(positive_reviews)
+            negative=len(negative_reviews)
+            neutral=len(insufficient_data_to_classify)
+            total=positive+negative+neutral
+            positive_percentage=(positive*100)//total
+            negative_percentage=(negative*100)//total
+            neutral_percentage=(neutral*100)//total
+            label6.insert(INSERT,str(positive_percentage)+"%")
+            label7.insert(INSERT,str(neutral_percentage)+"%")
+            label8.insert(INSERT,str(negative_percentage)+"%")
+            label6.config(state=DISABLED)
+            label7.config(state=DISABLED)
+            label8.config(state=DISABLED)
+        else:
+            messagebox.showinfo("Error", "Invalid Restaurant. No such restaurant found.")
 
     def radio():
         if(param.get()==1):
@@ -284,14 +295,17 @@ def rest_submit():
     
     def main_action():
         restaurant_id=ip1.get().lower()
-        restaurant_name=rest_id_dict[restaurant_id]
-        get_title=ip2.get()
-        get_review=text.get("1.0",END)
-        with open(r'newdata.csv', 'a', newline='') as csvfile:
-            fieldnames = ['restaurant_id','name','title','review_text']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writerow({'restaurant_id':restaurant_id, 'name':restaurant_name,'title':get_title,'review_text':get_review})
-    
+        if(restaurant_id not in rest_id_dict.keys()):
+            messagebox.showinfo("Error", "Invalid Restaurant ID")
+        else:
+            restaurant_name=rest_id_dict[restaurant_id]
+            get_title=ip2.get()
+            get_review=text.get("1.0",END)
+            with open(r'newdata.csv', 'a', newline='') as csvfile:
+                fieldnames = ['restaurant_id','name','title','review_text']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writerow({'restaurant_id':restaurant_id, 'name':restaurant_name,'title':get_title,'review_text':get_review})
+
     newwin = Toplevel(root)
     newwin.resizable(False, False)
     newwin.title("Submit a Review")
