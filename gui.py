@@ -36,7 +36,7 @@ for i in restaurant_name:
 
 
 
-review_title=list(dataset["title"]);title_clean=[];rtc1=[];title = "";reviews_title = list()
+review_title=list(dataset["title"]);title_clean=[];title=""
 for i in review_title:
 	for j in i:
 		j=str(j)
@@ -44,6 +44,7 @@ for i in review_title:
 			title+=j
 	title_clean.append(title)
 	title=""
+
 
 rest_id_dict={}
 for i in range(len(rest_id)):
@@ -242,9 +243,9 @@ def rest_review():
     
 def rest_cuisine():
     def main_action():
-        name=cb.get().lower()
+        name=cb.get().lower().strip()
         if(name.lower() not in cuisines_lower):
-            messagebox.showinfo("Error", "The selected Cuisine is not available.")
+            messagebox.showinfo("Error", "The selected Cuisine is not available or the input is invalid.")
         else:
             text.delete('1.0', END)
             positive_reviews, negative_reviews, insufficient_data_to_classify,indexWiseScore = classifyReviewsOf(food_in_restaurants[name])
@@ -295,8 +296,8 @@ def rest_submit():
     
     def main_action():
         restaurant_id=ip1.get().lower()
-        if(restaurant_id not in rest_id_dict.keys()):
-            messagebox.showinfo("Error", "Invalid Restaurant ID")
+        if(restaurant_id not in rest_id_dict.keys() or ip2.get()=="" or text.get("1.0",END)==""):
+            messagebox.showinfo("Error", "Invalid Restaurant ID or textbox left blank.")
         else:
             restaurant_name=rest_id_dict[restaurant_id]
             get_title=ip2.get()
@@ -305,6 +306,7 @@ def rest_submit():
                 fieldnames = ['restaurant_id','name','title','review_text']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writerow({'restaurant_id':restaurant_id, 'name':restaurant_name,'title':get_title,'review_text':get_review})
+            messagebox.showinfo("Success", "You review was successfully sent.")
 
     newwin = Toplevel(root)
     newwin.resizable(False, False)
@@ -331,20 +333,19 @@ def rest_submit():
     record.grid(column=0,row=3,pady=(0,10),padx=30,sticky=E)
     button=Button(newwin,text="Submit Review",command=main_action)
     button.grid(column=1,row=3,pady=(0,10),padx=5,sticky=W)
-    
     C.grid()
     newwin.mainloop()
 
 op1=PhotoImage(file="review.png")
-root.grid_columnconfigure(0, weight=1, uniform="fred")
-root.grid_columnconfigure(1, weight=1, uniform="fred")
+root.grid_columnconfigure(0, weight=1,uniform="fred")
+root.grid_columnconfigure(1, weight=1,uniform="fred")
 button1 =Button(root, text ="View Reviews",image=op1, command =rest_review)
 button1.grid(column=0,row=1,pady=(140,0),sticky=E,padx=(0,10))
 op2=PhotoImage(file="Cuisine.png")
 button2 =Button(root, text ="Top Cuisine Restarants",image=op2, command =rest_cuisine)
 button2.grid(column=1,row=1,pady=(140,0),sticky=W,padx=(10,0))
 op3=PhotoImage(file="submit.png")
-button2 =Button(root, text ="Top Cuisine Restarants",image=op3, command =rest_submit)
+button2 =Button(root, text ="Submit feedback",image=op3, command =rest_submit)
 button2.grid(columnspan=2,row=2,pady=10)
 C.grid()
 root.mainloop()
